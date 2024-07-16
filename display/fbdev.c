@@ -90,6 +90,30 @@ void fbdev_init(void)
     }
     printf("The framebuffer device was opened successfully.\n");
 
+#if (LV_COLOR_DEPTH == 16)
+    // Get variable screen information
+    if(ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo) == -1) {
+        perror("Error reading variable information");
+        return;
+    }
+
+	vinfo.bits_per_pixel = 16;
+	vinfo.red.length = 5;
+	vinfo.green.length = 6;
+	vinfo.blue.length = 5;
+	vinfo.transp.length = 0;
+	vinfo.red.offset = 11;
+	vinfo.green.offset = 5;
+	vinfo.blue.offset = 0;
+	vinfo.transp.offset = 0;
+
+    // Get variable screen information
+    if(ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo) == -1) {
+        perror("Error reading variable information");
+        return;
+    }
+#endif
+
 #if USE_BSD_FBDEV
     struct fbtype fb;
     unsigned line_length;
